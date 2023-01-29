@@ -18,6 +18,32 @@
 
 namespace ft {
 
+	template<class vector>
+	class v_iterator : public ft::iterator<std::random_access_iterator_tag, typename vector::value_type> {
+		typename vector::value_type* p;
+	public:
+		v_iterator(typename vector::value_type* x) :p(x) {}
+		v_iterator(const v_iterator& mit) : p(mit.p) {}
+		v_iterator& operator++() {
+			++p;
+			return *this;
+		}
+		v_iterator operator++(typename vector::value_type) {
+			v_iterator tmp(*this);
+			operator++();
+			return tmp;
+		}
+		bool operator==(const v_iterator& rhs) const {
+			return p==rhs.p;
+		}
+		bool operator!=(const v_iterator& rhs) const {
+			return p!=rhs.p;
+		}
+		typename vector::value_type& operator*() {
+			return *p;
+		}
+	};
+
     template<class T, class Allocator = std::allocator <T> >
     class vector {
     public:
@@ -29,11 +55,8 @@ namespace ft {
         typedef typename allocator_type::difference_type difference_type;
         typedef typename allocator_type::pointer pointer;
         typedef typename allocator_type::const_pointer const_pointer;
-		typedef pointer                                  iterator;
+		typedef typename ft::v_iterator<vector>          iterator;
 		typedef const_pointer                            const_iterator;
-
-		pointer                                         __begin_;
-		pointer                                         __end_;
         //typedef reverse_iterator;
         //typedef const_reverse_iterator;
 
@@ -73,9 +96,9 @@ namespace ft {
         //void assign(initializer_list <value_type> il){};
 
         allocator_type get_allocator() const{};
-		iterator begin(){return iterator(this->__begin_);};
+		iterator begin(){return iterator(this->_vector_array);};
         //const_iterator begin() const {};
-		iterator end() {return iterator(this->__end_);};
+		iterator end() {return iterator(this->_vector_array + this->_size_vector_array);};
         //const_iterator end() const {};
         //reverse_iterator rbegin() {};
         //const_reverse_iterator rbegin() const {};
@@ -107,11 +130,11 @@ namespace ft {
         const_reference front() const{};
 		reference back(){
 			_LIBCPP_ASSERT(!empty(), "back() called for empty vector");
-			return *(this->__end_ - 1);
+			return *(this->end() - 1);
 		};
         const_reference back() const{
 			_LIBCPP_ASSERT(!empty(), "back() called for empty vector");
-			return *(this->__end_ - 1);
+			return *(this->end() - 1);
 		};
         value_type *data() {};
         const value_type *data() const {};
@@ -136,7 +159,7 @@ namespace ft {
         //iterator erase(const_iterator position){};
         //iterator erase(const_iterator first, const_iterator last){};
         void clear() {};
-        void resize(size_type sz){};
+        void resize(size_type sz){_realloc(sz);};
         void resize(size_type sz, const value_type &c){};
         void swap(vector &){};
         bool __invariants() const{};
