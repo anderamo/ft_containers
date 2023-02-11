@@ -22,7 +22,7 @@ namespace ft {
 	class v_iterator : public ft::iterator<std::random_access_iterator_tag, typename vector::value_type> {
 		typename vector::value_type* p;
 	public:
-		v_iterator(typename vector::value_type* x) :p(x) {}
+		explicit v_iterator(typename vector::value_type* x) :p(x) {}
 		v_iterator(const v_iterator& mit) : p(mit.p) {}
 		v_iterator& operator++() {
 			++p;
@@ -33,6 +33,15 @@ namespace ft {
 			operator++();
 			return tmp;
 		}
+		v_iterator& operator--() {
+			++p;
+			return *this;
+		}
+		v_iterator operator--(typename vector::value_type) {
+			v_iterator tmp(*this);
+			operator--();
+			return tmp;
+		}
 		bool operator==(const v_iterator& rhs) const {
 			return p==rhs.p;
 		}
@@ -41,6 +50,39 @@ namespace ft {
 		}
 		typename vector::value_type& operator*() {
 			return *p;
+		}
+	};
+
+	template <class vector>
+	class v_reverse_iterator {
+	public:
+		typename vector::value_type* p;
+		typedef vector                                            iterator_type;
+		typedef typename ft::iterator_traits<vector>::difference_type difference_type;
+		typedef typename ft::iterator_traits<vector>::reference       reference;
+		typedef typename ft::iterator_traits<vector>::pointer         pointer;
+
+		v_reverse_iterator() {};
+		explicit v_reverse_iterator(vector x) {};
+		template <class U>  v_reverse_iterator(const reverse_iterator<U>& u) {};
+		template <class U>  v_reverse_iterator& operator=(const reverse_iterator<U>& u) {};
+		vector base() const {};
+		reference operator*() const {};
+		pointer   operator->() const {};
+		v_reverse_iterator& operator++() {};
+		v_reverse_iterator  operator++(int) {};
+		v_reverse_iterator& operator--() {};
+		v_reverse_iterator  operator--(int) {};
+		v_reverse_iterator  operator+ (difference_type n) const {};
+		v_reverse_iterator& operator+=(difference_type n) {};
+		v_reverse_iterator  operator- (difference_type n) const {};
+		v_reverse_iterator& operator-=(difference_type n) {};
+		reference         operator[](difference_type n) const {};
+		bool operator==(const v_reverse_iterator& rhs) const {
+			return p==rhs.p;
+		}
+		bool operator!=(const v_reverse_iterator& rhs) const {
+			return p!=rhs.p;
 		}
 	};
 
@@ -56,6 +98,7 @@ namespace ft {
         typedef typename allocator_type::pointer pointer;
         typedef typename allocator_type::const_pointer const_pointer;
 		typedef typename ft::v_iterator<vector>          iterator;
+		typedef typename ft::v_reverse_iterator<vector>          reverse_iterator;
 		typedef const_pointer                            const_iterator;
         //typedef reverse_iterator;
         //typedef const_reverse_iterator;
@@ -82,7 +125,10 @@ namespace ft {
 
         //vector(initializer_list <value_type> il, const allocator_type &a){};
 
-        ~vector(){};
+        ~vector(){
+			if (_size_vector_array != 0)
+				_alloc.deallocate(_vector_array, _size_vector_array);
+		};
 
         vector &operator=(const vector &x){std::cout << "Vector operator=\n";};
 
@@ -100,9 +146,9 @@ namespace ft {
         //const_iterator begin() const {};
 		iterator end() {return iterator(this->_vector_array + this->_size_vector_array);};
         //const_iterator end() const {};
-        //reverse_iterator rbegin() {};
+        reverse_iterator rbegin() {};
         //const_reverse_iterator rbegin() const {};
-        //reverse_iterator rend() {};
+        reverse_iterator rend() {};
         //const_reverse_iterator rend() const {};
         //const_iterator cbegin() const {};
         //const_iterator cend() const {};
@@ -140,19 +186,24 @@ namespace ft {
         const value_type *data() const {};
 		void push_back(const value_type &x){
 			if (this->_size_vector_array == capacity()){
-				const size_type __ms = max_size();
-				if (this->_size_vector_array + 1 > __ms)
+				const size_type _ms = max_size();
+				if (this->_size_vector_array + 1 > _ms)
 					return;
-				const size_type __cap = capacity();
-				if (__cap >= __ms / 2)
-					reserve(__ms);
+				const size_type _cap = capacity();
+				if (_cap >= _ms / 2)
+					reserve(_ms);
 				else
-					reserve(_VSTD::max(2*__cap, this->_size_vector_array + 1));
+					reserve(_VSTD::max(2*_cap, this->_size_vector_array + 1));
 			}
 			this->_vector_array[this->_size_vector_array] = x;
 			++this->_size_vector_array;
 		};
-        void pop_back(){};
+        void pop_back(){
+			if (this->_size_vector_array > -1) {
+				this->_size_vector_array--;
+				this->_alloc.destroy(this->_vector_array + this->_size_vector_array);
+			}
+		};
         //iterator insert(const_iterator position, const value_type &x){};
         //iterator insert(const_iterator position, size_type n, const value_type &x){};
         //iterator insert(const_iterator position, initializer_list <value_type> il){};
@@ -175,8 +226,15 @@ namespace ft {
 			tmp = _alloc.allocate(n);
 			if (tmp == 0)
 				throw std::bad_alloc();
-			for (size_type i = 0; i < _size_vector_array; i++) {
-				tmp[i] = _vector_array[i];
+			if (n < _size_vector_array) {
+				_size_vector_array = n;
+				for (size_type i = 0; i < n; i++) {
+					tmp[i] = _vector_array[i];
+				}
+			} else {
+				for (size_type i = 0; i < _size_vector_array; i++) {
+					tmp[i] = _vector_array[i];
+				}
 			}
 			if (n != -1)
 				_alloc.deallocate(_vector_array, _size_vector_array);
