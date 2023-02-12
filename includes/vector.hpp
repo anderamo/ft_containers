@@ -105,7 +105,6 @@ namespace ft {
 
 
         vector() : _size_vector_array(0) , _capacity_vector_array(0), _max_size_vertor_array(std::numeric_limits<difference_type>::max()){
-			std::cout << "Vector constructor 1\n";
 			_vector_array = _alloc.allocate(0);
 		};
 
@@ -130,7 +129,16 @@ namespace ft {
 				_alloc.deallocate(_vector_array, _size_vector_array);
 		};
 
-        vector &operator=(const vector &x){std::cout << "Vector operator=\n";};
+        vector &operator=(vector<int> *x){
+			reserve(x->_size_vector_array);
+			this->_size_vector_array = x->_size_vector_array;
+			for (size_t i = 0; i < x->_size_vector_array; i++) {
+				this->_vector_array[i] = x->_vector_array[i];
+			}
+			this->_alloc = x->_alloc;
+			this->_max_size_vertor_array = x->_max_size_vertor_array;
+			return *this;
+		};
 
         //vector &operator=(initializer_list <value_type> il);
 
@@ -154,11 +162,18 @@ namespace ft {
         //const_iterator cend() const {};
         //const_reverse_iterator crbegin() const {};
         //const_reverse_iterator crend() const {};
-		size_type size() const { return this->_size_vector_array;};
+		size_type size() const {
+			return this->_size_vector_array;
+		};
 		size_type max_size() const{
-			return this->_max_size_vertor_array;};
-		size_type capacity() const {return this->_capacity_vector_array;};
-		bool empty() const {return this->__begin_ == this->__end_;};
+			return this->_max_size_vertor_array;
+		};
+		size_type capacity() const {
+			return this->_capacity_vector_array;
+		};
+		bool empty() const {
+			return this->__begin_ == this->__end_;
+		};
         void reserve(size_type n){
 			if (n > max_size()) {
 				std::length_error("Reserve bigger than max size possible");
@@ -168,12 +183,22 @@ namespace ft {
 			}
 		};
         void shrink_to_fit() {};
-		reference operator[](size_type n){return this->_vector_array[n];};
-        const_reference operator[](size_type n) const{};
+		reference operator[](size_type n){
+			return this->_vector_array[n];
+		};
+        const_reference operator[](size_type n) const{
+			return this->_vector_array[n];
+		};
         reference at(size_type n){};
         const_reference at(size_type n) const{};
-        reference front(){};
-        const_reference front() const{};
+        reference front(){
+			_LIBCPP_ASSERT(!empty(), "back() called for empty vector");
+			return *(this->begin());
+		};
+        const_reference front() const{
+			_LIBCPP_ASSERT(!empty(), "back() called for empty vector");
+			return *(this->begin() - 1);
+		};
 		reference back(){
 			_LIBCPP_ASSERT(!empty(), "back() called for empty vector");
 			return *(this->end() - 1);
@@ -185,21 +210,12 @@ namespace ft {
         value_type *data() {};
         const value_type *data() const {};
 		void push_back(const value_type &x){
-			if (this->_size_vector_array == capacity()){
-				const size_type _ms = max_size();
-				if (this->_size_vector_array + 1 > _ms)
-					return;
-				const size_type _cap = capacity();
-				if (_cap >= _ms / 2)
-					reserve(_ms);
-				else
-					reserve(_VSTD::max(2*_cap, this->_size_vector_array + 1));
-			}
+			_reserve_vector(this->_size_vector_array);
 			this->_vector_array[this->_size_vector_array] = x;
 			++this->_size_vector_array;
 		};
         void pop_back(){
-			if (this->_size_vector_array > -1) {
+			if (this->_size_vector_array >= 0) {
 				this->_size_vector_array--;
 				this->_alloc.destroy(this->_vector_array + this->_size_vector_array);
 			}
@@ -209,10 +225,30 @@ namespace ft {
         //iterator insert(const_iterator position, initializer_list <value_type> il){};
         //iterator erase(const_iterator position){};
         //iterator erase(const_iterator first, const_iterator last){};
-        void clear() {};
-        void resize(size_type sz){_realloc(sz);};
-        void resize(size_type sz, const value_type &c){};
-        void swap(vector &){};
+        void clear() {
+			this->_alloc.destroy(this->_vector_array);
+			_size_vector_array = 0;
+		};
+        void resize(size_type sz){
+			_reserve_vector(sz);
+			_size_vector_array = sz;
+		};
+        void resize(size_type sz, const value_type &c){
+			size_t diff_tmp = _size_vector_array;
+			_reserve_vector(sz);
+			if (sz > diff_tmp) {
+				for (size_t i = diff_tmp; i < sz; ++i) {
+					_vector_array[i] = c;
+				}
+			}
+			_size_vector_array = sz;
+		};
+        void swap(vector &other){
+			ft::vector<int> tmp;
+			tmp = other;
+			other = this;
+			this = tmp;
+		};
         bool __invariants() const{};
 		//template<class InputIterator>iterator insert(const_iterator position, InputIterator first, InputIterator last){};
 	private:
@@ -241,6 +277,18 @@ namespace ft {
 			_vector_array = tmp;
 			_capacity_vector_array = n;
 		};
+		void _reserve_vector(size_type n){
+			if (n >= capacity()) {
+				const size_type _ms = max_size();
+				if (n + 1 > _ms)
+					return;
+				const size_type _cap = capacity();
+				if (_cap >= _ms / 2)
+					reserve(_ms);
+				else
+					reserve(_VSTD::max(2*_cap, n + 1));
+			}
+		}
     };
 
 }
