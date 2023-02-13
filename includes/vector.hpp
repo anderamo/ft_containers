@@ -15,6 +15,8 @@
 #include <memory>
 #include <stdexcept>
 #include <algorithm>
+#include <string>
+#include <sstream>
 
 namespace ft {
 
@@ -189,7 +191,18 @@ namespace ft {
         const_reference operator[](size_type n) const{
 			return this->_vector_array[n];
 		};
-        reference at(size_type n){};
+        reference at(size_type n){
+			if (n >= size()) {
+				//"at() out of range n (which is " << std::to_string(n) + ") >= size() (which is " + size() + ")";
+				std::string s1 = "at() out of range n (which is ";
+				std::string s2 = ") >= size() (which is ";
+				std::string s3 = ")";
+				std::stringstream msg;
+				msg << s1 << n << s2 << size() << s3;
+				throw std::out_of_range(msg.str());
+			}
+			return *(this->_vector_array + n);
+		};
         const_reference at(size_type n) const{};
         reference front(){
 			_LIBCPP_ASSERT(!empty(), "back() called for empty vector");
@@ -246,8 +259,8 @@ namespace ft {
         void swap(vector &other){
 			ft::vector<int> tmp;
 			tmp = other;
-			other = this;
-			this = tmp;
+			other = *this;
+			*this = tmp;
 		};
         bool __invariants() const{};
 		//template<class InputIterator>iterator insert(const_iterator position, InputIterator first, InputIterator last){};
@@ -286,7 +299,7 @@ namespace ft {
 				if (_cap >= _ms / 2)
 					reserve(_ms);
 				else
-					reserve(_VSTD::max(2*_cap, n + 1));
+					reserve(std::max(2*_cap, n + 1));
 			}
 		}
     };

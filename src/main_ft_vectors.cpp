@@ -13,6 +13,47 @@ void print_vector_info(const ft::vector<int>& v)
 
 }
 
+void ft_vector_at() {
+	std::cout << "8 FT VECTOR AT" << std::endl;
+	ft::vector<int> v;
+	print_vector_info(v);
+	v.push_back(1);
+	print_vector_info(v);
+	v.push_back(2);
+	print_vector_info(v);
+	v.push_back(3);
+	print_vector_info(v);
+	v.push_back(4);
+	print_vector_info(v);
+	v.push_back(5);
+	print_vector_info(v);
+	std::cout << "8.1 FT PRINT VECTOR WITH v.at(i)" << std::endl;
+	for (int i = 0; i < v.size(); i++) {
+		std::cout << "v.at(" << i << ") = " << v.at(i) << std::endl;
+	}
+	v.at(0) = 100;
+	v.at(1) = 200;
+	v.at(2) = 300;
+	v.at(3) = 400;
+	v.at(4) = 500;
+	std::cout << "8.2 FT PRINT VECTOR WITH v.at(i)" << std::endl;
+	for (int i = 0; i < v.size(); i++) {
+		std::cout << "v.at(" << i << ") = " << v.at(i) << std::endl;
+	}
+	try {
+		v.at(5);
+	}
+	catch (...) {
+
+	}
+	try {
+		v.at(100);
+	}
+	catch (...) {
+
+	}
+}
+
 void ft_vector_swap() {
 	std::cout << "7 FT VECTOR SWAP" << std::endl;
 	ft::vector<int> v, y;
@@ -333,14 +374,19 @@ int main()
 //	ft_vector_clear();
 //	std::cout << std::endl;
 //	std::cout << std::endl;
+//
+//	ft_vector_copy_assignment();
+//	std::cout << std::endl;
+//	std::cout << std::endl;
+//
+//	ft_vector_swap();
+//	std::cout << std::endl;
+//	std::cout << std::endl;
 
-	ft_vector_copy_assignment();
+	ft_vector_at();
 	std::cout << std::endl;
 	std::cout << std::endl;
 
-	ft_vector_swap();
-	std::cout << std::endl;
-	std::cout << std::endl;
 
 
 	return 0;

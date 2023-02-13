@@ -4,7 +4,7 @@ NAME_STD = std_containers
 
 SANITIZE = -g3 -fsanitize=address
 
-FLAGS = -std=c++98 #-Wall -Wextra -Werror
+FLAGS = #-std=c++98 -Wall -Wextra -Werror
 
 SRCS	=	src/main_ft_vectors.cpp
 

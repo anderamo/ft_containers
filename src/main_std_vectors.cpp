@@ -16,6 +16,78 @@ void print_vector_info(const std::vector<int>& v)
 
 }
 
+void std_vector_at() {
+	std::cout << "8 STD VECTOR AT" << std::endl;
+	std::vector<int> v, y;
+	print_vector_info(v);
+	v.push_back(1);
+	print_vector_info(v);
+	v.push_back(2);
+	print_vector_info(v);
+	v.push_back(3);
+	print_vector_info(v);
+	v.push_back(4);
+	print_vector_info(v);
+	v.push_back(5);
+	print_vector_info(v);
+	std::cout << "8.1 STD PRINT VECTOR WITH v.at(i)" << std::endl;
+	for (int i = 0; i < v.size(); i++) {
+		std::cout << "v.at(" << i << ") = " << v.at(i) << std::endl;
+	}
+	v.at(0) = 100;
+	v.at(1) = 200;
+	v.at(2) = 300;
+	v.at(3) = 400;
+	v.at(4) = 500;
+	std::cout << "8.2 STD PRINT VECTOR WITH v.at(i)" << std::endl;
+	for (int i = 0; i < v.size(); i++) {
+		std::cout << "v.at(" << i << ") = " << v.at(i) << std::endl;
+	}
+	try {
+		v.at(5);
+	}
+	catch (...) {
+
+	}
+	try {
+		v.at(100);
+	}
+	catch (...) {
+
+	}
+}
+
+void std_vector_swap() {
+	std::cout << "7 STD VECTOR SWAP" << std::endl;
+	std::vector<int> v, y;
+	v.reserve(5);
+	print_vector_info(v);
+	v.push_back(1);
+	print_vector_info(v);
+	v.push_back(2);
+	print_vector_info(v);
+	v.push_back(3);
+	print_vector_info(v);
+	std::cout << "7.1 STD PRINT VECTOR WITH v[i]" << std::endl;
+	for (int i = 0; i < v.size(); i++) {
+		std::cout << "v[" << i << "] = " << v[i] << std::endl;
+	}
+	std::cout << "7.1 STD PRINT VECTOR WITH ITERATORS" << std::endl;
+	for (std::vector<int>::iterator it = v.begin() ; it != v.end(); ++it) {
+		std::cout << "*it = " << *it << std::endl;
+	}
+	v.swap(y);
+	print_vector_info(y);
+	std::cout << "7.2 STD PRINT VECTOR WITH y[i]" << std::endl;
+	for (int i = 0; i < y.size(); i++) {
+		std::cout << "y[" << i << "] = " << y[i] << std::endl;
+	}
+	std::cout << "7.2 STD PRINT VECTOR WITH ITERATORS" << std::endl;
+	for (std::vector<int>::iterator it = y.begin() ; it != y.end(); ++it) {
+		std::cout << "*it = " << *it << std::endl;
+	}
+}
+
 void std_vector_copy_assignment() {
 	std::cout << "6 STD VECTOR COPY ASSIGNMENT" << std::endl;
 	std::vector<int> v, y;
@@ -305,11 +377,18 @@ int main()
 //	std_vector_clear();
 //	std::cout << std::endl;
 //	std::cout << std::endl;
+//
+//	std_vector_copy_assignment();
+//	std::cout << std::endl;
+//	std::cout << std::endl;
+//
+//	std_vector_swap();
+//	std::cout << std::endl;
+//	std::cout << std::endl;
 
-	std_vector_copy_assignment();
+	std_vector_at();
 	std::cout << std::endl;
 	std::cout << std::endl;
-
 
 
 	return 0;
